@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>आशीष ❤️ काजल | हमारी प्रेम डायरी</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Rozha+One&family=Yatra+One&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    .font-title { font-family: 'Rozha One', serif; }
+    .font-hindi-hand { font-family: 'Kalam', cursive; }
+    .font-yatra { font-family: 'Yatra One', cursive; }
+
+    /* Floating Heart Emojis */
+    @keyframes floatHeart {
+      0% { transform: translateY(105vh) scale(0.6) rotate(0deg); opacity: 0; }
+      20% { opacity: 0.9; }
+      80% { opacity: 0.9; }
+      100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
+    }
+    .floating-heart {
+      position: fixed;
+      bottom: -50px;
+      animation: floatHeart 9s linear infinite;
+      z-index: 5;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Notebook Bookfold 3D Animation */
+    .book-stage {
+      perspective: 1500px;
+    }
+    .book-cover {
+      transform-origin: left center;
+      transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .book-opened .book-cover {
+      transform: rotateY(-140deg);
+      pointer-events: none;
+    }
+
+    /* Lined Notebook Page */
+    .ruled-paper {
+      background-color: #fffdfa;
+      background-image: repeating-linear-gradient(white 0px, white 31px, #fecdd3 32px);
+      line-height: 32px;
+    }
+
+    /* Polaroid Flip */
+    .polaroid-card {
+      perspective: 800px;
+    }
+    .polaroid-inner {
+      transition: transform 0.7s;
+      transform-style: preserve-3d;
+    }
+    .polaroid-card.flipped .polaroid-inner {
+      transform: rotateY(180deg);
+    }
+    .polaroid-front, .polaroid-back {
+      backface-visibility: hidden;
+    }
+    .polaroid-back {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-rose-100 via-pink-100 to-amber-100 font-hindi-hand text-slate-800 min-h-screen relative overflow-x-hidden select-none">
+
+  <div id="heart-container" class="fixed inset-0 pointer-events-none z-0"></div>
+
+  <div class="fixed top-4 right-4 z-50">
+    <button id="music-btn" class="bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-md border border-rose-300 text-rose-600 font-bold text-xs flex items-center gap-2 hover:bg-white transition-all transform hover:scale-105 active:scale-95">
+      <span id="music-icon">🎵</span>
+      <span id="music-text">मधुर धुन बजाएं</span>
+    </button>
+  </div>
+
+  <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur px-5 py-1.5 rounded-full shadow-md border border-rose-200 text-xs font-bold text-rose-700 flex items-center gap-2">
+    <span>प्रेम अध्याय:</span>
+    <span id="progress-val" class="bg-rose-500 text-white px-2.5 py-0.5 rounded-full text-[11px]">डायरी बंद</span>
+  </div>
+
+  <main class="relative z-20 min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8">
+
+    <div id="stage-book" class="book-stage w-full max-w-md relative">
+      <div id="book-element" class="relative bg-amber-50 rounded-2xl shadow-2xl border-4 border-amber-900/20 overflow-hidden">
+        
+        <div id="cover" class="book-cover bg-gradient-to-br from-rose-700 via-rose-600 to-pink-800 p-8 sm:p-10 rounded-2xl shadow-2xl text-white text-center cursor-pointer flex flex-col items-center justify-between min-h-[480px]">
+          <div class="border-2 border-rose-300/40 rounded-xl p-6 w-full h-full flex flex-col items-center justify-between">
+            <span class="text-xs uppercase tracking-widest text-rose-200">गोपनीय प्रेम डायरी</span>
+            <div>
+              <div class="text-6xl mb-3 animate-pulse">📖❤️</div>
+              <h1 class="text-4xl font-title text-rose-100 mb-2">आशीष की काजल</h1>
+              <p class="text-sm text-rose-200 italic">"एक खूबसूरत दास्तां, सिर्फ तुम्हारे लिए..."</p>
+            </div>
+            
+            <div class="w-full">
+              <button onclick="openNotebook()" class="w-full bg-white text-rose-700 font-bold py-3 rounded-full shadow-lg hover:bg-rose-50 transition-all text-sm transform hover:scale-105">
+                डायरी खोलने के लिए यहाँ छुएं ✨
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="stage-1" class="hidden w-full max-w-xl bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border-2 border-rose-200 text-center transition-all duration-700">
+      <span class="text-xs font-bold text-rose-500 uppercase tracking-widest">अध्याय १: मेरी जीवनसंगिनी</span>
+      <h2 class="text-3xl font-title text-rose-700 mt-1 mb-4">मेरी दुनिया, मेरी काजल</h2>
+
+      <div class="w-48 h-48 sm:w-56 sm:h-56 mx-auto rounded-2xl p-2 bg-gradient-to-tr from-rose-400 to-pink-300 shadow-lg mb-4">
+        <img id="couple-img" src="./photo.png" alt="Ashish and Kajal" class="w-full h-full object-cover rounded-xl shadow-inner">
+      </div>
+      <p class="text-xs text-slate-400 mb-4">[फोटो बदलने के लिए कोड में &lt;img id="couple-img"&gt; का src बदलें]</p>
+
+      <div class="bg-rose-50 p-5 rounded-2xl border border-rose-200 text-slate-700 text-lg leading-relaxed mb-6 font-hindi-hand">
+        "तेरी मुस्कान से रोशन हर सवेरा होता है,<br>
+        तू जो पास हो तो गम का ना कोई फेरा होता है।"
+      </div>
+
+      <button onclick="nextStage(2)" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-8 py-3 rounded-full shadow-md transition-all">
+        आगे बढ़ें (हमारी यादें) 💖
+      </button>
+    </div>
+
+    <div id="stage-2" class="hidden w-full max-w-3xl bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border-2 border-rose-200 transition-all duration-700">
+      <div class="text-center mb-6">
+        <span class="text-xs font-bold text-rose-500 uppercase tracking-widest">अध्याय २: अनमोल पल</span>
+        <h2 class="text-3xl font-title text-rose-700 mt-1">कार्ड्स को पलटकर पढ़ें</h2>
+        <p class="text-xs text-slate-500">काजल, आगे बढ़ने के लिए तीनों कार्ड्स को एक-एक करके टच करें</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+        <div class="polaroid-card h-64 cursor-pointer" onclick="flipCard(this, 1)">
+          <div class="polaroid-inner relative w-full h-full rounded-2xl shadow-md border border-rose-200">
+            <div class="polaroid-front absolute inset-0 bg-rose-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+              <span class="text-4xl mb-2">🌸</span>
+              <h4 class="font-bold text-slate-800 text-base">पहली मुलाकात</h4>
+              <p class="text-xs text-rose-500 mt-2">[ छूकर पढ़ें ]</p>
+            </div>
+            <div class="polaroid-back absolute inset-0 bg-rose-600 text-white rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+              <p class="text-base leading-relaxed">"जब पहली बार तुम्हें देखा था, दिल ने कहा था—बस यही मेरी हमसफ़र है।"</p>
+              <span class="text-xs mt-3 opacity-80">- तुम्हारा आशीष</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="polaroid-card h-64 cursor-pointer" onclick="flipCard(this, 2)">
+          <div class="polaroid-inner relative w-full h-full rounded-2xl shadow-md border border-rose-200">
+            <div class="polaroid-front absolute inset-0 bg-rose-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+              <span class="text-4xl mb-2">💍</span>
+              <h4 class="font-bold text-slate-800 text-base">सात फेरों का बंधन</h4>
+              <p class="text-xs text-rose-500 mt-2">[ छूकर पढ़ें ]</p>
+            </div>
+            <div class="polaroid-back absolute inset-0 bg-pink-600 text-white rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+              <p class="text-base leading-relaxed">"अग्नि के सामने लिए हुए वो सात वचन, मेरी ज़िंदगी की सबसे बड़ी दौलत हैं।"</p>
+              <span class="text-xs mt-3 opacity-80">- हमेशा के लिए</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="polaroid-card h-64 cursor-pointer" onclick="flipCard(this, 3)">
+          <div class="polaroid-inner relative w-full h-full rounded-2xl shadow-md border border-rose-200">
+            <div class="polaroid-front absolute inset-0 bg-rose-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+              <span class="text-4xl mb-2">✨</span>
+              <h4 class="font-bold text-slate-800 text-base">तुम्हारी प्यारी हँसी</h4>
+              <p class="text-xs text-rose-500 mt-2">[ छूकर पढ़ें ]</p>
+            </div>
+            <div class="polaroid-back absolute inset-0 bg-rose-600 text-white rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+              <p class="text-base leading-relaxed">"जब तुम खिलखिला कर हँसती हो, तो पूरा घर खुशियों से महक उठता है।"</p>
+              <span class="text-xs mt-3 opacity-80">- सिर्फ तुम्हारा</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <button id="stage2-btn" disabled onclick="nextStage(3)" class="bg-slate-300 text-slate-500 font-bold px-8 py-3 rounded-full shadow cursor-not-allowed transition-all">
+          तीनों कार्ड्स पढ़ें (लॉक है) 🔒
+        </button>
+      </div>
+    </div>
+
+    <div id="stage-3" class="hidden w-full max-w-xl bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border-2 border-rose-200 text-center transition-all duration-700">
+      <span class="text-xs font-bold text-rose-500 uppercase tracking-widest">अध्याय ३: दिल की परीक्षा</span>
+      <h2 class="text-3xl font-title text-rose-700 mt-1 mb-4">आशीष के दिल का सवाल</h2>
+      <p class="text-base text-slate-700 mb-6">आशीष के लिए इस पूरी दुनिया में सबसे अनमोल क्या है?</p>
+
+      <div class="space-y-3 mb-6 text-left">
+        <button onclick="checkQuizAnswer(false, this)" class="w-full bg-rose-50 hover:bg-rose-100 text-slate-800 p-4 rounded-xl font-medium border border-rose-200 transition-all text-sm">
+          क) दुनिया भर की दौलत और शोहरत 💰
+        </button>
+        <button onclick="checkQuizAnswer(true, this)" class="w-full bg-rose-50 hover:bg-rose-100 text-slate-800 p-4 rounded-xl font-medium border border-rose-200 transition-all text-sm">
+          ख) काजल की मुस्कान और उसका साथ ❤️
+        </button>
+        <button onclick="checkQuizAnswer(false, this)" class="w-full bg-rose-50 hover:bg-rose-100 text-slate-800 p-4 rounded-xl font-medium border border-rose-200 transition-all text-sm">
+          ग) आराम और छुट्टियाँ 🏖️
+        </button>
+      </div>
+
+      <p id="quiz-status" class="text-sm font-bold min-h-[24px] mb-4"></p>
+
+      <button id="stage3-btn" disabled onclick="nextStage(4)" class="bg-slate-300 text-slate-500 font-bold px-8 py-3 rounded-full shadow cursor-not-allowed transition-all">
+        आशीष का प्रेम-पत्र खोलें 🔒
+      </button>
+    </div>
+
+    <div id="stage-4" class="hidden w-full max-w-2xl bg-[#fffdfa] rounded-3xl p-6 sm:p-10 shadow-2xl border-4 border-rose-200 transition-all duration-700">
+      <div class="text-center mb-6">
+        <span class="text-xs font-bold text-rose-500 uppercase tracking-widest">अध्याय ४: दिल की कलम से</span>
+        <h2 class="text-3xl font-title text-rose-700 mt-1">काजल के नाम आशीष का पत्र</h2>
+      </div>
+
+      <div class="ruled-paper p-6 rounded-2xl border border-rose-200 mb-6 min-h-[220px]">
+        <p id="letter-content" class="text-slate-800 text-lg sm:text-xl font-hindi-hand break-words whitespace-pre-line leading-[32px]"></p>
+      </div>
+
+      <div class="text-center">
+        <button id="stage4-btn" disabled onclick="nextStage(5)" class="bg-slate-300 text-slate-500 font-bold px-8 py-3 rounded-full shadow cursor-not-allowed transition-all">
+          पत्र पूरा होने की प्रतीक्षा करें... ⏳
+        </button>
+      </div>
+    </div>
+
+    <div id="stage-5" class="hidden w-full max-w-xl bg-white rounded-3xl p-8 sm:p-12 shadow-2xl border-4 border-rose-300 text-center transition-all duration-700">
+      <div class="text-6xl mb-2 animate-bounce">🌹💍</div>
+      <span class="text-xs font-bold text-rose-500 uppercase tracking-widest">अंतिम अध्याय: सात जन्मों का वादा</span>
+      <h2 class="text-4xl font-title text-rose-700 mt-2 mb-4">तुम ही मेरी शुरुआत और मंज़िल हो</h2>
+
+      <div class="bg-rose-50 p-6 rounded-2xl border border-rose-200 text-slate-700 text-lg leading-relaxed mb-6">
+        "हर सुख में तुम्हारा साथ, हर दुःख में तुम्हारा ढाल बनूँगा,<br>
+        जब तक धड़कन चलेगी, सिर्फ और सिर्फ तुम्हारा रहूँगा।<br>
+        <span class="text-rose-600 font-bold mt-2 block">सदा तुम्हारा — आशीष</span>"
+      </div>
+
+      <button onclick="launchCelebration()" class="w-full bg-gradient-to-r from-rose-500 via-pink-600 to-rose-600 text-white font-bold py-4 rounded-full shadow-xl hover:shadow-rose-300 transform active:scale-95 hover:scale-105 transition-all text-lg">
+        हमारे प्यार का जश्न मनाएं 🎆💖
+      </button>
+
+      <div id="final-message" class="mt-6 hidden">
+        <p class="text-2xl font-title text-rose-600">काजल ❤️ आशीष</p>
+        <p class="text-sm text-slate-500 mt-1">यह खूबसूरत वेबसाइट सिर्फ और सिर्फ तुम्हारे लिए बनाई गई है।</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // 1. Floating Hearts Engine
+    const heartContainer = document.getElementById('heart-container');
+    const symbols = ['❤️', '💖', '🌹', '✨', '💍', '🥰', '🌸'];
+
+    function dropHeart() {
+      const el = document.createElement('div');
+      el.classList.add('floating-heart');
+      el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+      el.style.left = Math.random() * 92 + 'vw';
+      el.style.fontSize = (Math.random() * 18 + 16) + 'px';
+      el.style.animationDuration = (Math.random() * 4 + 6) + 's';
+      heartContainer.appendChild(el);
+
+      setTimeout(() => el.remove(), 9000);
+    }
+    setInterval(dropHeart, 450);
+
+    // 2. Open Notebook Cover Animation
+    function openNotebook() {
+      const book = document.getElementById('stage-book');
+      book.classList.add('book-opened');
+      
+      confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+
+      setTimeout(() => {
+        book.classList.add('hidden');
+        document.getElementById('stage-1').classList.remove('hidden');
+        document.getElementById('progress-val').innerText = '१ / ५';
+      }, 1000);
+    }
+
+    // 3. Stage Transition Controller
+    function nextStage(stageNum) {
+      for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById(`stage-${i}`);
+        if (el) el.classList.add('hidden');
+      }
+
+      const nextEl = document.getElementById(`stage-${stageNum}`);
+      if (nextEl) nextEl.classList.remove('hidden');
+
+      const numerals = ['१', '२', '३', '४', '५'];
+      document.getElementById('progress-val').innerText = `${numerals[stageNum - 1]} / ५`;
+
+      if (stageNum === 4) {
+        startHindiTypewriter();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 4. Stage 2 Polaroid Logic
+    const readCards = new Set();
+    function flipCard(cardEl, id) {
+      cardEl.classList.toggle('flipped');
+      readCards.add(id);
+
+      if (readCards.size === 3) {
+        const btn = document.getElementById('stage2-btn');
+        btn.disabled = false;
+        btn.className = "bg-rose-600 hover:bg-rose-700 text-white font-bold px-8 py-3 rounded-full shadow cursor-pointer transition-all";
+        btn.innerText = "अध्याय ३ पर चलें 💖";
+      }
+    }
+
+    // 5. Stage 3 Quiz Logic
+    function checkQuizAnswer(isCorrect, btnEl) {
+      const status = document.getElementById('quiz-status');
+      if (isCorrect) {
+        status.className = "text-sm font-bold text-emerald-600 mb-4";
+        status.innerText = "बिल्कुल सही! आशीष की खुशियाँ सिर्फ तुमसे हैं काजल ❤️";
+        btnEl.className = "w-full bg-emerald-100 border-2 border-emerald-500 text-emerald-900 p-4 rounded-xl font-medium transition-all text-sm";
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+
+        const nextBtn = document.getElementById('stage3-btn');
+        nextBtn.disabled = false;
+        nextBtn.className = "bg-rose-600 hover:bg-rose-700 text-white font-bold px-8 py-3 rounded-full shadow cursor-pointer transition-all";
+        nextBtn.innerText = "आशीष का प्रेम-पत्र पढ़ें 💌";
+      } else {
+        status.className = "text-sm font-bold text-rose-500 mb-4";
+        status.innerText = "गलत जवाब! फिर से सोचो मेरी जान 😉";
+        btnEl.className = "w-full bg-rose-100 border border-rose-400 text-slate-800 p-4 rounded-xl font-medium transition-all text-sm";
+      }
+    }
+
+    // 6. Stage 4 Typewriter (Fix for Typography & Formatting)
+    const letterHindi = "मेरी प्यारी काजल,\n\nजब से तुम मेरी ज़िंदगी में आई हो, मेरा हर एक पल खुशियों से भर गया है। तुम्हारी प्यारी सी मुस्कान मेरी सबसे बड़ी ताकत है और तुम्हारा साथ मेरी सबसे बड़ी दौलत।\n\nज़िंदगी के हर मोड़ पर, हर कदम पर तुम्हारा आशीष हमेशा तुम्हारे साथ रहेगा। तुम मेरी पहली और आखिरी मोहब्बत हो।\n\nसदा तुम्हारा,\nआशीष";
+    let letterIndex = 0;
+
+    function startHindiTypewriter() {
+      const container = document.getElementById('letter-content');
+      container.innerText = "";
+      letterIndex = 0;
+
+      function typeChar() {
+        if (letterIndex < letterHindi.length) {
+          container.innerText += letterHindi.charAt(letterIndex);
+          letterIndex++;
+          setTimeout(typeChar, 40);
+        } else {
+          const btn = document.getElementById('stage4-btn');
+          btn.disabled = false;
+          btn.className = "bg-rose-600 hover:bg-rose-700 text-white font-bold px-8 py-3 rounded-full shadow cursor-pointer transition-all";
+          btn.innerText = "अंतिम वादा देखें 🌹";
+        }
+      }
+      typeChar();
+    }
+
+    // 7. Stage 5 Mega Fireworks Celebration
+    function launchCelebration() {
+      document.getElementById('final-message').classList.remove('hidden');
+
+      const end = Date.now() + 4 * 1000;
+      const palette = ['#e11d48', '#fb7185', '#fda4af', '#f43f5e', '#ffe4e6'];
+
+      (function frame() {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: palette
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: palette
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      }());
+    }
+
+    // 8. Soft Audio Harmonizer
+    let audioCtx = null;
+    let playing = false;
+    let timer = null;
+
+    document.getElementById('music-btn').addEventListener('click', () => {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (!playing) {
+        playing = true;
+        document.getElementById('music-icon').innerText = '⏸️';
+        document.getElementById('music-text').innerText = 'धुन बंद करें';
+
+        const ragScale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+        timer = setInterval(() => {
+          if (!playing) return;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const note = ragScale[Math.floor(Math.random() * ragScale.length)];
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(note, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0.035, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.4);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start();
+          osc.stop(audioCtx.currentTime + 2.4);
+        }, 750);
+      } else {
+        playing = false;
+        clearInterval(timer);
+        document.getElementById('music-icon').innerText = '🎵';
+        document.getElementById('music-text').innerText = 'मधुर धुन बजाएं';
+      }
+    });
+  </script>
+</body>
+</html>
